@@ -29,3 +29,70 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Media {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  filename  String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  altText   String?
+  caption   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  connections MediaConnection[]
+
+  @@map("media")
+}
+
+model MediaConnection {
+  id             String   @id @default(uuid())
+  mediaId        String
+  connectedTo    String // 'product', 'category', 'page', 'post', 'user'
+  connectedId    String
+  connectionType String // 'thumbnail', 'gallery', 'featured', 'banner', 'logo', 'avatar'
+  createdAt      DateTime @default(now())
+
+  // Foreign Keys
+  media      Media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  product    Product?  @relation(fields: [productId], references: [id])
+  productId  String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  @@unique([mediaId, connectedTo, connectedId, connectionType])
+  @@map("media_connections")
+}
+
+// Optional: যদি Products, Categories ইত্যাদি manage করেন
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  sku         String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Media connections
+  mediaConnections MediaConnection[]
+
+  @@map("products")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Media connections
+  mediaConnections MediaConnection[]
+
+  @@map("categories")
+}
