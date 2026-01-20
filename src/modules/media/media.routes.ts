@@ -79,7 +79,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Upload multiple files
@@ -153,7 +153,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Get all media with pagination
@@ -224,6 +224,9 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
+    if (!id || Array.isArray(id)) {
+      return res.status(400).json({ message: "Invalid product id" });
+    }
     const media = await prisma.media.findUnique({
       where: { id },
     });
@@ -261,6 +264,7 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
 router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+
     const { altText, caption } = req.body;
 
     const media = await prisma.media.update({
@@ -318,7 +322,7 @@ router.delete(
       if (urlParts.length > 1) {
         const filePath = path.join(
           process.env.UPLOAD_PATH || "./uploads",
-          urlParts[1]
+          urlParts[1],
         );
 
         // Delete file from filesystem
@@ -339,7 +343,7 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Search media
@@ -391,7 +395,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

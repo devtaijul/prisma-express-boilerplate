@@ -31,68 +31,149 @@ model Session {
 }
 
 model Media {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  filename  String
-  mimeType  String
-  size      Int
-  width     Int?
-  height    Int?
-  altText   String?
-  caption   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relationships
-  connections MediaConnection[]
+  id                 String     @id @default(uuid())
+  url                String     @unique
+  filename           String
+  mimeType           String
+  size               Int
+  width              Int?
+  height             Int?
+  altText            String?
+  caption            String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  categories         Category[]
+  featuredInProducts Product[]  @relation("FeaturedImage")
+  galleryOfProducts  Product[]  @relation("GalleryImages")
+  productId          String?
 
   @@map("media")
 }
 
-model MediaConnection {
-  id             String   @id @default(uuid())
-  mediaId        String
-  connectedTo    String // 'product', 'category', 'page', 'post', 'user'
-  connectedId    String
-  connectionType String // 'thumbnail', 'gallery', 'featured', 'banner', 'logo', 'avatar'
-  createdAt      DateTime @default(now())
-
-  // Foreign Keys
-  media      Media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-  product    Product?  @relation(fields: [productId], references: [id])
-  productId  String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?
-
-  @@unique([mediaId, connectedTo, connectedId, connectionType])
-  @@map("media_connections")
-}
-
 // Optional: যদি Products, Categories ইত্যাদি manage করেন
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  sku         String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id String @id @default(uuid())
 
-  // Media connections
-  mediaConnections MediaConnection[]
+  /**
+   * ================= BASIC =================
+   */
+  title      String
+  category   Category   @relation(fields: [categoryId], references: [id])
+  categoryId String
+  stitchType StitchType
+
+  /**
+   * ================= VARIANT =================
+   */
+  sizes String[] @default([])
+
+  /**
+   * ================= PRICING =================
+   */
+  regularPrice Float
+  price        Float
+
+  /**
+   * ================= STOCK =================
+   */
+  inStock Boolean @default(true)
+  sku     String?
+
+  /**
+   * ================= FLAGS =================
+   */
+  isTopSelling      Boolean @default(false)
+  newArrival        Boolean @default(false)
+  isCustomeRelation Boolean @default(false)
+
+  /**
+   * ================= VISUAL =================
+   */
+  color           String?
+  manufacturer    String?
+  displayPriority String?
+
+  /**
+   * ================= KEYWORDS =================
+   */
+  keywords String[] @default([])
+
+  /**
+   * ================= MEASUREMENTS =================
+   */
+  body           String?
+  pantLong       String?
+  kamizLong      String?
+  innerAndSalwar String?
+
+  /**
+   * ================= CONTENT =================
+   */
+  description Json
+  instruction Json?
+  videoUrl    String?
+  liveLink    String?
+
+  /**
+   * ================= SEO =================
+   */
+  seoTitle       String?
+  seoDescription String?
+
+  /**
+   * ================= MEDIA =================
+   */
+  featuredImageId String?
+  featuredImage   Media?  @relation("FeaturedImage", fields: [featuredImageId], references: [id])
+
+  galleryImages Media[] @relation("GalleryImages")
+
+  /**
+   * ================= ATTACHED PRODUCT =================
+   * One product can be attached to ONE other product
+   */
+  attachProductId   String?  @unique // Added @unique for one-to-one relation
+  attachProduct     Product? @relation("AttachedProduct", fields: [attachProductId], references: [id])
+  attachedToProduct Product? @relation("AttachedProduct") // Reverse relation
+
+  /**
+   * ================= RELATED PRODUCTS =================
+   * Many-to-many relation for related products
+   */
+  relatedProducts   Product[] @relation("RelatedProducts")
+  relatedToProducts Product[] @relation("RelatedProducts")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("products")
 }
 
+enum StitchType {
+  STITCH
+  UNSTITCH
+}
+
 model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  slug      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String  @id @default(cuid())
+  title       String
+  slug        String  @unique
+  description String?
 
   // Media connections
-  mediaConnections MediaConnection[]
+  featuredImage   Media?  @relation(fields: [featuredImageId], references: [id])
+  featuredImageId String?
 
-  @@map("categories")
+  seoTitle       String?
+  seoDescription String?
+
+  parentId String?
+  parent   Category?  @relation("CategoryToParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToParent")
+
+  isPublished Boolean @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }

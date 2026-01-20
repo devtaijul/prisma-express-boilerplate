@@ -7,11 +7,12 @@ import authRoutes from "./modules/auth/auth.route";
 import healthRoutes from "./modules/health/health.route";
 import mediaRoutes from "./modules/media/media.routes";
 import connectionRoutes from "./modules/media/connection.routes";
+import categoryRoutes from "./modules/category/category.routes";
 
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { notFound } from "./middlewares/notFound.middleware";
-import path from "path";
-const UPLOAD_PATH = process.env.UPLOAD_PATH || "/var/www/uploads";
+import productRoutes from "./modules/product/product.route";
+
 const app = express();
 
 app.use(cors());
@@ -25,6 +26,8 @@ app.use("/api/media", mediaRoutes);
 app.use("/api/media/connections", connectionRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/health", healthRoutes);
+app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/product", productRoutes);
 
 // Static files
 app.use("/uploads", express.static("uploads"));

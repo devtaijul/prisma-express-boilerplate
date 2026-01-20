@@ -1,4 +1,5 @@
 import type { JwtPayload } from "jsonwebtoken";
+import { Category } from "../generated/prisma";
 
 declare global {
   namespace Express {
@@ -9,5 +10,10 @@ declare global {
     }
   }
 }
+
+export type CategoryInput = Omit<
+  Category,
+  "id" | "createdAt" | "updatedAt" | "children"
+>;
 
 export {};

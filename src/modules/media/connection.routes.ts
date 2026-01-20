@@ -23,7 +23,7 @@ router.get(
 
       res.status(200).json({
         success: true,
-        data: connections.map((conn) => ({
+        data: connections.map((conn: any) => ({
           id: conn.id,
           mediaId: conn.mediaId,
           connectedTo: conn.connectedTo,
@@ -40,7 +40,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Create connection
@@ -126,7 +126,7 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Get connections for an entity
@@ -173,7 +173,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;
