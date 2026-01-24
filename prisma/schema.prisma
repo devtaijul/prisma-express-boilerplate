@@ -58,6 +58,7 @@ model Product {
    * ================= BASIC =================
    */
   title      String
+  slug       String     @unique
   category   Category   @relation(fields: [categoryId], references: [id])
   categoryId String
   stitchType StitchType

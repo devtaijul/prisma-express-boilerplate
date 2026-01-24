@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
+import { asyncHandler } from "../../middlewares/asyncHandler";
+import { Product } from "../../generated/prisma";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -11,6 +13,39 @@ export const createProduct = async (req: Request, res: Response) => {
       categoryId,
       ...data
     } = req.body;
+
+    const exists = await prisma.product.findUnique({
+      where: {
+        slug: data.slug,
+      },
+    });
+
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: "Product already exists",
+      });
+    }
+
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category id is required",
+      });
+    }
+
+    const category = await prisma.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -229,11 +264,66 @@ export const getProductById = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id || Array.isArray(id)) {
+      return res.status(400).json({ message: "Invalid product identifier" });
+    }
+
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { id: id }, // match by product id
+          { slug: id }, // match by product slug
+        ],
+      },
+      include: {
+        featuredImage: true,
+        galleryImages: true,
+        attachProduct: true,
+        relatedProducts: true,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    let relatedProducts: Product[] = [];
+    if (!product.isCustomeRelation) {
+      relatedProducts = await prisma.product.findMany({
+        where: {
+          categoryId: product.categoryId,
+        },
+        include: {
+          featuredImage: true,
+          galleryImages: true,
+          attachProduct: true,
+          relatedProducts: true,
+        },
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: product,
+      relatedProducts,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Failed to fetch product",
+    });
+  }
+};
+
+export const getProductBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+
+    if (!slug || Array.isArray(slug)) {
       return res.status(400).json({ message: "Invalid product id" });
     }
 
     const product = await prisma.product.findUnique({
-      where: { id },
+      where: { slug },
       include: {
         featuredImage: true,
         galleryImages: true,
@@ -254,3 +344,42 @@ export const getProductById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch product", error });
   }
 };
+
+export const getSpecialProducts = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { type = "top" } = req.query;
+    if (type === "new") {
+      const products = await prisma.product.findMany({
+        where: {
+          newArrival: true,
+        },
+        include: {
+          featuredImage: true,
+          galleryImages: true,
+          attachProduct: true,
+          relatedProducts: true,
+        },
+      });
+      res.json({
+        success: true,
+        data: products,
+      });
+    } else {
+      const products = await prisma.product.findMany({
+        where: {
+          isTopSelling: true,
+        },
+        include: {
+          featuredImage: true,
+          galleryImages: true,
+          attachProduct: true,
+          relatedProducts: true,
+        },
+      });
+      res.json({
+        success: true,
+        data: products,
+      });
+    }
+  },
+);

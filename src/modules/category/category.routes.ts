@@ -5,6 +5,7 @@ import {
   getAllCategories,
   getAllFlatCategory,
   getCategoryById,
+  getParentCategories,
   updateCategory,
 } from "./category.controller";
 
@@ -14,6 +15,7 @@ router.get("/", getAllCategories).post("/", createCategory);
 
 router.get("/flat", getAllFlatCategory);
 router.get("/tree", childDrivenCategory);
+router.get("/parent", getParentCategories);
 
 router.get("/:id", getCategoryById).put("/:id", updateCategory);
 

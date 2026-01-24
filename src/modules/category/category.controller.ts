@@ -219,3 +219,66 @@ export const childDrivenCategory = asyncHandler(
     });
   },
 );
+
+type CategoryNode = {
+  id: string;
+  parentId: string | null;
+  _count: { products: number };
+  children?: CategoryNode[];
+  productCount?: number;
+};
+
+const buildCategoryTree = (categories: CategoryNode[]) => {
+  const map = new Map<string, CategoryNode>();
+
+  // map setup
+  categories.forEach((cat) => {
+    map.set(cat.id, { ...cat, children: [] });
+  });
+
+  // build tree
+  const roots: CategoryNode[] = [];
+  map.forEach((cat) => {
+    if (cat.parentId) {
+      map.get(cat.parentId)?.children?.push(cat);
+    } else {
+      roots.push(cat);
+    }
+  });
+
+  return roots;
+};
+
+const calculateProductCount = (category: CategoryNode): number => {
+  const childrenCount =
+    category.children?.reduce(
+      (sum, child) => sum + calculateProductCount(child),
+      0,
+    ) ?? 0;
+
+  category.productCount = category._count.products + childrenCount;
+
+  return category.productCount;
+};
+export const getParentCategories = asyncHandler(
+  async (req: Request, res: Response) => {
+    const categories = await prisma.category.findMany({
+      include: {
+        featuredImage: true,
+        _count: {
+          select: { products: true },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const tree = buildCategoryTree(categories as CategoryNode[]);
+
+    tree.forEach((category) => calculateProductCount(category));
+
+    res.status(200).json({
+      success: true,
+      data: tree,
+    });
+  },
+);
