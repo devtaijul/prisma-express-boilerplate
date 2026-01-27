@@ -265,6 +265,10 @@ router.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
+    if (!id || Array.isArray(id)) {
+      return res.status(400).json({ message: "Invalid product id" });
+    }
+
     const { altText, caption } = req.body;
 
     const media = await prisma.media.update({
@@ -304,6 +308,10 @@ router.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+
+      if (!id || Array.isArray(id)) {
+        return res.status(400).json({ message: "Invalid product id" });
+      }
 
       // Find media first
       const media = await prisma.media.findUnique({

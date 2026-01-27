@@ -6,12 +6,12 @@ import compression from "compression";
 import authRoutes from "./modules/auth/auth.route";
 import healthRoutes from "./modules/health/health.route";
 import mediaRoutes from "./modules/media/media.routes";
-import connectionRoutes from "./modules/media/connection.routes";
 import categoryRoutes from "./modules/category/category.routes";
 
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { notFound } from "./middlewares/notFound.middleware";
 import productRoutes from "./modules/product/product.route";
+import orderRoutes from "./modules/order/order.route";
 
 const app = express();
 
@@ -23,11 +23,11 @@ app.use(morgan("dev"));
 
 // API Routes
 app.use("/api/media", mediaRoutes);
-app.use("/api/media/connections", connectionRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
+app.use("/api/v1/order", orderRoutes);
 
 // Static files
 app.use("/uploads", express.static("uploads"));

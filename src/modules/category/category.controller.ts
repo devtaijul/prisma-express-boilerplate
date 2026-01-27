@@ -94,7 +94,7 @@ export const getCategoryById = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    if (!id) {
+    if (!id || Array.isArray(id)) {
       return res.status(400).json({
         success: false,
         message: "Category id is required",
@@ -122,7 +122,7 @@ export const updateCategory = asyncHandler(
   async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    if (!id) {
+    if (!id || Array.isArray(id)) {
       return res.status(400).json({
         success: false,
         message: "Category id is required",

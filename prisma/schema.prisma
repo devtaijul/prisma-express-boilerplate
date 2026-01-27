@@ -141,8 +141,9 @@ model Product {
    * ================= RELATED PRODUCTS =================
    * Many-to-many relation for related products
    */
-  relatedProducts   Product[] @relation("RelatedProducts")
-  relatedToProducts Product[] @relation("RelatedProducts")
+  relatedProducts   Product[]    @relation("RelatedProducts")
+  relatedToProducts Product[]    @relation("RelatedProducts")
+  orderItems        orderItems[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -177,4 +178,68 @@ model Category {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
+}
+
+enum paymentMethod {
+  CASH_ON_DELIVERY
+  BKASH
+  SSL_COMMERCE
+}
+
+model orderItems {
+  id         String     @id @default(uuid())
+  title      String
+  image      String
+  price      Float
+  quantity   Int
+  productId  String
+  size       String
+  stitchType StitchType @default(STITCH)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: NoAction)
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum orderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  //customer details
+  name    String
+  phone   String
+  address String
+
+  //payment details
+  paymentMethod paymentMethod @default(CASH_ON_DELIVERY)
+
+  // Delivery area
+  deliveryArea   String
+  subtotal       Float
+  deliveryCharge Float
+  total          Float
+  trackingNumber String @unique
+
+  //order status
+  status orderStatus @default(CONFIRMED)
+
+  //Extra
+  note String?
+
+  //order details
+  orderItems orderItems[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

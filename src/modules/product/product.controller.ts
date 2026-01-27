@@ -327,7 +327,11 @@ export const getProductBySlug = async (req: Request, res: Response) => {
       include: {
         featuredImage: true,
         galleryImages: true,
-        attachProduct: true,
+        attachProduct: {
+          include: {
+            featuredImage: true,
+          },
+        },
         relatedProducts: true,
       },
     });
@@ -372,7 +376,11 @@ export const getSpecialProducts = asyncHandler(
         include: {
           featuredImage: true,
           galleryImages: true,
-          attachProduct: true,
+          attachProduct: {
+            include: {
+              featuredImage: true,
+            },
+          },
           relatedProducts: true,
         },
       });
