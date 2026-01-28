@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
 import { asyncHandler } from "../../middlewares/asyncHandler";
-import { Category } from "../../generated/prisma";
+import { Category } from "../../../generated/prisma";
 import { CategoryInput } from "../../types/express";
 
 export const getAllFlatCategory = asyncHandler(
@@ -61,7 +61,9 @@ export const createCategory = asyncHandler(
     }
 
     const category = await prisma.category.create({
-      data: variables,
+      data: {
+        ...variables,
+      } as Category,
     });
 
     console.log("category", category);

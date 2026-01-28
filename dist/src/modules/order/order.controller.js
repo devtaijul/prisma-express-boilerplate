@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.trackingOrder = exports.getAllOrders = exports.createOrder = void 0;
 const prisma_1 = require("../../config/prisma");
 const asyncHandler_1 = require("../../middlewares/asyncHandler");
-const prisma_2 = require("../../generated/prisma");
+const prisma_2 = require("../../../generated/prisma");
 const password_1 = require("../../utils/password");
 exports.createOrder = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const { name, phone, address, deliveryArea, paymentMethod, note, orderItems, subtotal, deliveryCharge, total, } = req.body;

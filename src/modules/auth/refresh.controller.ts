@@ -24,5 +24,5 @@ export const refreshToken = asyncHandler(
     });
 
     res.json({ accessToken });
-  }
+  },
 );

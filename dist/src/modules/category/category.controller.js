@@ -41,7 +41,9 @@ exports.createCategory = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
         });
     }
     const category = await prisma_1.prisma.category.create({
-        data: variables,
+        data: {
+            ...variables,
+        },
     });
     console.log("category", category);
     res.status(201).json({

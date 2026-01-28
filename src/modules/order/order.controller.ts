@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
 import { asyncHandler } from "../../middlewares/asyncHandler";
-import { Order, orderStatus } from "../../generated/prisma";
+import { Order, orderStatus } from "../../../generated/prisma";
 import { generateOrderTrackingNumber } from "../../utils/password";
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {

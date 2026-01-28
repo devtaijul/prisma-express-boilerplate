@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/prisma";
 import { asyncHandler } from "../../middlewares/asyncHandler";
-import { Product } from "../../generated/prisma";
+import { Product } from "../../../generated/prisma";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
