@@ -41,15 +41,15 @@ const allowedMimeTypes = [
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
-  cb: FileFilterCallback
+  cb: FileFilterCallback,
 ) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(
       new Error(
-        `Invalid file type. Allowed types: ${allowedMimeTypes.join(", ")}`
-      )
+        `Invalid file type. Allowed types: ${allowedMimeTypes.join(", ")}`,
+      ),
     );
   }
 };
@@ -96,9 +96,9 @@ export const uploadMultiple = upload.array("files", 10); // Max 10 files
 export const getFileUrl = (
   filename: string,
   year: string,
-  month: string
+  month: string,
 ): string => {
-  const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+  const baseUrl = process.env.BASE_URL || "http://localhost:4000";
   return `${baseUrl}/uploads/${year}/${month}/${filename}`;
 };
 
@@ -116,7 +116,7 @@ export const deleteFile = (filePath: string): Promise<void> => {
 };
 
 export const getImageDimensions = async (
-  filePath: string
+  filePath: string,
 ): Promise<{ width: number; height: number }> => {
   try {
     const metadata = await sharp(filePath).metadata();

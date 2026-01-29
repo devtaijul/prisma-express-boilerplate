@@ -80,6 +80,11 @@ export const getAllCategories = asyncHandler(
     const categories = await prisma.category.findMany({
       include: {
         parent: true,
+        _count: {
+          select: {
+            products: true,
+          },
+        },
       },
     });
 
