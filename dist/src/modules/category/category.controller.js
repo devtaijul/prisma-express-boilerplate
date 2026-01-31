@@ -56,6 +56,11 @@ exports.getAllCategories = (0, asyncHandler_1.asyncHandler)(async (req, res) => 
     const categories = await prisma_1.prisma.category.findMany({
         include: {
             parent: true,
+            _count: {
+                select: {
+                    products: true,
+                },
+            },
         },
     });
     const categoryCount = await prisma_1.prisma.category.count();

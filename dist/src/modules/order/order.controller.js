@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.trackingOrder = exports.getAllOrders = exports.createOrder = void 0;
+exports.getOrderById = exports.trackingOrder = exports.getAllOrders = exports.createOrder = void 0;
 const prisma_1 = require("../../config/prisma");
 const asyncHandler_1 = require("../../middlewares/asyncHandler");
 const prisma_2 = require("../../../generated/prisma");
@@ -86,6 +86,37 @@ exports.trackingOrder = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
         },
     });
     if (!order || order.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "Order not found",
+        });
+    }
+    return res.status(200).json({
+        success: true,
+        data: order,
+    });
+});
+exports.getOrderById = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
+    const { id } = req.params;
+    if (!id || Array.isArray(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Order id is required",
+        });
+    }
+    const order = await prisma_1.prisma.order.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            orderItems: {
+                include: {
+                    product: true,
+                },
+            },
+        },
+    });
+    if (!order) {
         return res.status(404).json({
             success: false,
             message: "Order not found",

@@ -183,6 +183,7 @@ export const getProducts = async (req: Request, res: Response) => {
       search = "",
       orderBy = "createdAt",
       order = "desc",
+      category,
     } = req.query as Record<string, string>;
 
     const pageNumber = parseInt(page);
@@ -201,6 +202,9 @@ export const getProducts = async (req: Request, res: Response) => {
             title: {
               contains: search,
               mode: "insensitive",
+            },
+            category: {
+              slug: category,
             },
           },
           ...(isNumber
@@ -232,6 +236,9 @@ export const getProducts = async (req: Request, res: Response) => {
             title: {
               contains: search,
               mode: "insensitive",
+            },
+            category: {
+              slug: category,
             },
           },
           ...(isNumber
@@ -277,7 +284,12 @@ export const getProductById = async (req: Request, res: Response) => {
       include: {
         featuredImage: true,
         galleryImages: true,
-        attachProduct: true,
+        attachProduct: {
+          include: {
+            featuredImage: true,
+            galleryImages: true,
+          },
+        },
         relatedProducts: true,
       },
     });
@@ -295,7 +307,12 @@ export const getProductById = async (req: Request, res: Response) => {
         include: {
           featuredImage: true,
           galleryImages: true,
-          attachProduct: true,
+          attachProduct: {
+            include: {
+              featuredImage: true,
+              galleryImages: true,
+            },
+          },
           relatedProducts: true,
         },
       });

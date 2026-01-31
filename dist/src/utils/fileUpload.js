@@ -82,7 +82,7 @@ exports.uploadSingle = upload.single("file");
 exports.uploadMultiple = upload.array("files", 10); // Max 10 files
 // Helper function to get file URL
 const getFileUrl = (filename, year, month) => {
-    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const baseUrl = process.env.BASE_URL || "http://localhost:4000";
     return `${baseUrl}/uploads/${year}/${month}/${filename}`;
 };
 exports.getFileUrl = getFileUrl;

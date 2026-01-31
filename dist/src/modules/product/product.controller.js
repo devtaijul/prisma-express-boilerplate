@@ -146,7 +146,8 @@ const deleteProduct = async (req, res) => {
 exports.deleteProduct = deleteProduct;
 const getProducts = async (req, res) => {
     try {
-        const { page = "1", limit = "10", search = "", orderBy = "createdAt", order = "desc", } = req.query;
+        const { page = "1", limit = "10", search = "", orderBy = "createdAt", order = "desc", category, } = req.query;
+        console.log("category_slug", category);
         const pageNumber = parseInt(page);
         const pageSize = parseInt(limit);
         const skip = (pageNumber - 1) * pageSize;
@@ -161,6 +162,9 @@ const getProducts = async (req, res) => {
                         title: {
                             contains: search,
                             mode: "insensitive",
+                        },
+                        category: {
+                            slug: category,
                         },
                     },
                     ...(isNumber
@@ -191,6 +195,9 @@ const getProducts = async (req, res) => {
                         title: {
                             contains: search,
                             mode: "insensitive",
+                        },
+                        category: {
+                            slug: category,
                         },
                     },
                     ...(isNumber
@@ -234,7 +241,12 @@ const getProductById = async (req, res) => {
             include: {
                 featuredImage: true,
                 galleryImages: true,
-                attachProduct: true,
+                attachProduct: {
+                    include: {
+                        featuredImage: true,
+                        galleryImages: true,
+                    },
+                },
                 relatedProducts: true,
             },
         });
@@ -250,7 +262,12 @@ const getProductById = async (req, res) => {
                 include: {
                     featuredImage: true,
                     galleryImages: true,
-                    attachProduct: true,
+                    attachProduct: {
+                        include: {
+                            featuredImage: true,
+                            galleryImages: true,
+                        },
+                    },
                     relatedProducts: true,
                 },
             });
