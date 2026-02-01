@@ -15,8 +15,31 @@ import orderRoutes from "./modules/order/order.route";
 
 const app = express();
 
-app.use(cors());
-//app.use(helmet());
+const allowedOrigins = [
+  "https://sajherbati.com",
+  "https://admin.sajherbati.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Postman / server-to-server request e origin undefined thake
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  }),
+);
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  }),
+);
 app.use(compression());
 app.use(express.json());
 app.use(morgan("dev"));
