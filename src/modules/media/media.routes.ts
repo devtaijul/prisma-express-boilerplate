@@ -1,7 +1,6 @@
 // routes/media.routes.ts
 import { Router, Request, Response, NextFunction } from "express";
 
-import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import {
@@ -159,8 +158,6 @@ router.post(
 // Get all media with pagination
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("i am calling");
-
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const search = req.query.search as string;

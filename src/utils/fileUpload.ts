@@ -98,7 +98,7 @@ export const getFileUrl = (
   year: string,
   month: string,
 ): string => {
-  const baseUrl = process.env.BASE_URL || "http://localhost:4000";
+  const baseUrl = process.env.BASE_URL || "https://api.sajherbati.com";
   return `${baseUrl}/uploads/${year}/${month}/${filename}`;
 };
 
