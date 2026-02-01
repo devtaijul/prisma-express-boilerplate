@@ -45,7 +45,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // API Routes
-app.use("/api/media", mediaRoutes);
+app.use("/api/v1/media", mediaRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/category", categoryRoutes);
