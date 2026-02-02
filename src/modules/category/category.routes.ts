@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   childDrivenCategory,
   createCategory,
+  deleteCategories,
   getAllCategories,
   getAllFlatCategory,
   getCategoryById,
@@ -17,6 +18,9 @@ router.get("/flat", getAllFlatCategory);
 router.get("/tree", childDrivenCategory);
 router.get("/parent", getParentCategories);
 
-router.get("/:id", getCategoryById).put("/:id", updateCategory);
+router
+  .get("/:id", getCategoryById)
+  .put("/:id", updateCategory)
+  .delete("/:id", deleteCategories);
 
 export default router;
